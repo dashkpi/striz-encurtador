@@ -1,0 +1,12 @@
+<script>
+    // CONFIGURAÇÃO - Altere a URL de destino aqui
+    const urlDestino = "https://telegram.momentosdolucas.com/?utm_campaign=WHATSAPP&utm_source=DIA-1&utm_medium=TESTE-A";
+    
+    // Atualiza o link de redirecionamento manual (caso exista no HTML)
+    if (document.getElementById("redirect-link")) {
+        document.getElementById("redirect-link").href = urlDestino;
+    }
+    
+    // Redireciona instantaneamente
+    window.location.href = urlDestino;
+</script>

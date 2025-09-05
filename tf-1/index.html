@@ -1,0 +1,257 @@
+<script type="text/javascript">
+    (function() {
+        'use strict';
+        
+        if (window._tf) return;
+        window._tf = 1;
+    
+        // Flag para evitar múltiplas inicializações de _0x1
+        let __tf_inited = false;
+    
+        function _0x1() {
+            if (__tf_inited) return;
+            __tf_inited = true;
+    
+            const _0xa = 'https://wb.trackfather.com/api/tracking/webhook';
+            const _0xb = '91933a96b8765b7dfb826388df276b120f90747a3a0bd66e5f263402362e3e5a';
+            const _0x10 = 'https://t.me/+9-uvoXClEJZkNzcx'; // Fallback Telegram
+            
+            const _0xc = '_tf_ev';
+            const _0xd = '_tf_id';
+            const _0xe = '_fbp';
+            const _0xf = '_fbc';
+            const _0xg = '_tf_link';        // Link retornado pela API
+            const _0xh = '_tf_backend_id';  // lead_id retornado pelo backend
+            
+            // Captura imediata do fbclid (prioridade)
+            (function() {
+                const p = new URLSearchParams(window.location.search);
+                const f = p.get('fbclid');
+                if (f) {
+                    sessionStorage.setItem('_tf_fb', f);
+                    localStorage.setItem('_tf_fb_backup', f);
+                }
+            })();
+            
+            // UUID v4 simples
+            function _0x2() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            
+            function _0x3() {
+                let id = localStorage.getItem(_0xh);
+                if (!id) {
+                    id = localStorage.getItem(_0xd);
+                    if (!id) {
+                        id = _0x2();
+                        localStorage.setItem(_0xd, id);
+                    }
+                }
+                return id;
+            }
+            
+            function _0x4(e) {
+                const id = _0x3();
+                const d = localStorage.getItem(_0xc);
+                if (!d) return false;
+                try {
+                    const ev = JSON.parse(d);
+                    return ev[id] && ev[id][e];
+                } catch {
+                    localStorage.removeItem(_0xc);
+                    return false;
+                }
+            }
+            
+            function _0x5(e, r) {
+                const id = _0x3();
+                let d = localStorage.getItem(_0xc) || '{}';
+                try {
+                    const ev = JSON.parse(d);
+                    if (!ev[id]) ev[id] = {};
+                    ev[id][e] = { s: 1, t: Date.now() };
+                    localStorage.setItem(_0xc, JSON.stringify(ev));
+                } catch {}
+            }
+            
+            function _0x6(n) {
+                const m = document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)');
+                return m ? m.pop() : null;
+            }
+            
+            function _0x7() {
+                const p = new URLSearchParams(window.location.search);
+                const fbclid = p.get('fbclid') || sessionStorage.getItem('_tf_fb') || localStorage.getItem('_tf_fb_backup');
+                
+                let fbc = _0x6(_0xf);
+                if (!fbc && fbclid) {
+                    // Gera _fbc sintético quando houver fbclid
+                    fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+                }
+                
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ms = String(now.getMilliseconds()).padStart(3, '0');
+                const spTimestamp = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds + '.' + ms + '-03:00';
+                
+                return {
+                    token: _0xb,
+                    lead_id: _0x3(),
+                    timestamp: spTimestamp,
+                    url_origem: window.location.href,
+                    fbp: _0x6(_0xe),
+                    fbc: fbc,
+                    fbclid: fbclid,
+                    ip: '',
+                    utm_source: 'WHATSAPP',
+                    utm_medium: '2025-09-05',
+                    utm_campaign: 'DISPARO',
+                    utm_content: null,
+                    utm_term: null,
+                    site_source_name: null,
+                    campaign_id: null,
+                    adset_id: null,
+                    ad_id: null,
+                    user_agent: navigator.userAgent
+                };
+            }
+            
+            // UI opcional de redirecionamento (mantida)
+            function _showRedirectingAnimation() {
+                if (document.getElementById('tf-redirecting-animation')) return;
+                const animationDiv = document.createElement('div');
+                animationDiv.id = 'tf-redirecting-animation';
+                animationDiv.style.position = 'fixed';
+                animationDiv.style.top = '0';
+                animationDiv.style.left = '0';
+                animationDiv.style.width = '100%';
+                animationDiv.style.height = '100%';
+                animationDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                animationDiv.style.display = 'flex';
+                animationDiv.style.justifyContent = 'center';
+                animationDiv.style.alignItems = 'center';
+                animationDiv.style.zIndex = '9999';
+                const textDiv = document.createElement('div');
+                textDiv.innerText = 'Redirecionando...';
+                textDiv.style.color = 'white';
+                textDiv.style.fontSize = '24px';
+                textDiv.style.fontFamily = 'Arial, sans-serif';
+                animationDiv.appendChild(textDiv);
+                document.body.appendChild(animationDiv);
+            }
+            function _hideRedirectingAnimation() {
+                const animationDiv = document.getElementById('tf-redirecting-animation');
+                if (animationDiv) animationDiv.remove();
+            }
+    
+            async function _0x8(e, retryAttempt = 0) {
+                // Envia eventos exclusivamente ao TrackFather
+                const d = _0x7();
+                d.event = e;
+    
+                if (e === 'click_button') _showRedirectingAnimation();
+                
+                try {
+                    const r = await fetch(_0xa, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-TrackFather-Token': _0xb
+                        },
+                        body: JSON.stringify(d),
+                        keepalive: true
+                    });
+                    
+                    if (r.ok) {
+                        const res = await r.json();
+                        _0x5(e, res);
+                        
+                        if (e === 'page_view' && res.lead_id) {
+                            localStorage.setItem(_0xh, res.lead_id);
+                        }
+                        
+                        const finalLink = res.invite_link || res.link || localStorage.getItem(_0xg) || _0x10;
+                        
+                        if (finalLink && (res.invite_link || res.link)) {
+                            localStorage.setItem(_0xg, finalLink);
+                        }
+                        
+                        if (e === 'click_button' && finalLink) {
+                            // Redireciona o mais rápido possível
+                            _hideRedirectingAnimation();
+                            // manter href para compatibilidade; atraso 0ms para velocidade
+                            setTimeout(function(){ window.location.href = finalLink; }, 0);
+                        }
+                        return true;
+                    } else {
+                        if (e === 'click_button') {
+                            const savedLink = localStorage.getItem(_0xg);
+                            const linkToUse = savedLink || _0x10;
+                            if (retryAttempt === 0) {
+                                return _0x8(e, 1);
+                            }
+                            _hideRedirectingAnimation();
+                            setTimeout(function(){ window.location.href = linkToUse; }, 0);
+                        }
+                    }
+                } catch (err) {
+                    if (e === 'click_button') {
+                        const savedLink = localStorage.getItem(_0xg);
+                        const linkToUse = savedLink || _0x10;
+                        if (retryAttempt === 0) {
+                            return _0x8(e, 1);
+                        }
+                        _hideRedirectingAnimation();
+                        setTimeout(function(){ window.location.href = linkToUse; }, 0);
+                    }
+                }
+                return false;
+            }
+            
+            function _0x9() {
+                const buttons = document.querySelectorAll('#trackfather');
+                if (buttons && buttons.length > 0) {
+                    buttons.forEach(button => {
+                        button.onclick = function(e) {
+                            e.preventDefault();
+                            _0x8('click_button');
+                        };
+                    });
+                } else {
+                    setTimeout(_0x9, 1000);
+                }
+            }
+            
+            // ---- Fluxo prioritário e rápido ----
+            // 1) Envia somente page_view (UTMs tratadas)
+            // 2) Na sequência do retorno, envia click_button
+            // 3) Redireciona logo após o click_button responder
+            _0x8('page_view').then(function() {
+                _0x8('click_button');
+            });
+    
+            // Mantém o bind em botões caso a página tenha CTA manual
+            _0x9();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', _0x1);
+        } else {
+            _0x1();
+        }
+        
+        window.addEventListener('load', function() {
+            setTimeout(_0x1, 500);
+        });
+    })();
+    </script>
+    
